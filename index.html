@@ -36,11 +36,9 @@
     }
     .kicker { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
     h1 { font-family: Fraunces, Georgia, serif; font-weight: 650; font-size: clamp(28px, 4vw, 40px); margin: 6px 0 8px; letter-spacing: -0.02em; }
-    .lede { max-width: 720px; color: var(--muted); margin: 0; line-height: 1.5; }
+    .lede { max-width: 760px; color: var(--muted); margin: 0; line-height: 1.5; }
     .wrap { max-width: 1180px; margin: 0 auto; padding: 22px 22px 64px; }
-    .pairs {
-      display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 8px;
-    }
+    .pairs { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 8px; }
     .pairs button {
       appearance: none; border: 1px solid var(--line); background: var(--card);
       color: var(--ink); border-radius: 999px; padding: 8px 14px; cursor: pointer;
@@ -49,10 +47,7 @@
     .pairs button:hover { border-color: var(--ink); }
     .pairs button.active { background: var(--ink); color: #fff; border-color: var(--ink); }
     .pair-sub { color: var(--muted); font-size: 13px; margin-bottom: 18px; }
-    .verdict {
-      border-radius: 14px; padding: 16px 18px; margin-bottom: 18px;
-      display: grid; gap: 4px;
-    }
+    .verdict { border-radius: 14px; padding: 16px 18px; margin-bottom: 18px; display: grid; gap: 4px; }
     .verdict.yes { background: var(--yes-bg); color: var(--yes); }
     .verdict.mixed { background: var(--mixed-bg); color: var(--mixed); }
     .verdict.no { background: var(--no-bg); color: var(--no); }
@@ -64,6 +59,7 @@
       background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px 16px 12px;
     }
     .card h2 { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; font-weight: 700; }
+    .span2 { grid-column: 1 / -1; }
     .funds { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
     .fund { border-radius: 12px; padding: 12px; }
     .fund.dim { background: var(--dim-soft); }
@@ -79,11 +75,21 @@
     .kpi span { display: block; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
     .kpi b { display: block; margin-top: 4px; font-size: 18px; }
     .chart-box { position: relative; height: 260px; }
+    .chart-box.tall { height: 300px; }
     .note { font-size: 12px; color: var(--muted); margin: 8px 0 0; line-height: 1.45; }
     .commentary { line-height: 1.6; }
     .commentary p { margin: 0 0 10px; }
     .commentary ul { margin: 0; padding-left: 18px; }
     .commentary li { margin-bottom: 6px; }
+    .yr-wrap { overflow-x: auto; }
+    table.years { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.years th, table.years td { padding: 7px 8px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+    table.years th:first-child, table.years td:first-child { text-align: left; }
+    table.years thead th { font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+    table.years tbody tr:last-child td { border-bottom: 0; font-weight: 700; }
+    table.years .pos { color: var(--yes); }
+    table.years .neg { color: var(--no); }
+    table.years .muted { color: var(--muted); }
     footer { margin-top: 22px; font-size: 12px; color: var(--muted); line-height: 1.5; }
   </style>
 </head>
@@ -92,7 +98,7 @@
     <div class="wrap" style="padding-bottom:0">
       <div class="kicker">Internal comparison · GBP Acc share classes</div>
       <h1>Is Dimensional worth the extra fee?</h1>
-      <p class="lede">One pair at a time. Same risk neighbourhood, different engines: Dimensional uses a fixed mix and a factor-tilted equity book. HSBC uses cap-weighted index funds, a REIT sleeve and a tactical overlay — usually at a lower OCF.</p>
+      <p class="lede">One pairing at a time. Trailing 1y / 3y / 5y still sit at the top. Underneath is calendar-year NAV-to-NAV from year-end to year-end — that is the series that shows whether any edge is every year, or just 2022.</p>
     </div>
   </header>
 
@@ -103,14 +109,14 @@
 
     <div class="grid">
       <div class="card">
-        <h2>The two funds</h2>
+        <h2>The funds</h2>
         <div class="funds" id="fundCards"></div>
         <div class="kpis" id="kpis"></div>
       </div>
       <div class="card">
         <h2>Annualised total return</h2>
         <div class="chart-box"><canvas id="retChart"></canvas></div>
-        <p class="note">Net of fund OCF. Windows are close but not identical across providers — use as a like-for-like sketch, not a tick-level audit.</p>
+        <p class="note">Net of fund OCF. Trailing windows from provider snapshots around mid-to-late 2026 — a sketch, not a tick-level audit.</p>
       </div>
       <div class="card">
         <h2>Strategic asset mix</h2>
@@ -120,16 +126,24 @@
       <div class="card">
         <h2>Risk snapshot</h2>
         <div class="chart-box"><canvas id="riskChart"></canvas></div>
-        <p class="note">Volatility is 3-year annualised where published. Drawdown is the worst published peak-to-trough in each house’s own materials, so the windows differ.</p>
+        <p class="note">Volatility is 3-year annualised where published. Drawdown windows are each house’s own print, so they are not identical.</p>
       </div>
-      <div class="card" style="grid-column: 1 / -1">
+      <div class="card span2">
+        <h2>Calendar year NAV return</h2>
+        <div class="chart-box tall"><canvas id="yearChart"></canvas></div>
+        <p class="note">Full calendar years use 31 Dec (or last working day). 2026 is year-to-date to 22 Sep, not a completed year. Source: year-end NAV series.</p>
+        <div class="yr-wrap" style="margin-top:12px">
+          <table class="years" id="yearTable"></table>
+        </div>
+      </div>
+      <div class="card span2">
         <h2>Commentary — is the extra cost earned?</h2>
         <div class="commentary" id="commentary"></div>
       </div>
     </div>
 
     <footer>
-      Built for internal discussion, September 2026. Not a recommendation. Past performance is not a guide to future returns. Sources include Trustnet, Morningstar, HSBC factsheets and Dimensional literature; as-at dates cluster around mid-2026 and do not share a single close.
+      Built for internal discussion, September 2026. Not a recommendation. Past performance is not a guide to future returns. Trailing figures from Trustnet / Morningstar / factsheets. Calendar-year NAV returns from the internal year-end price series (22 Sep 2026 for the current year).
     </footer>
   </div>
 
@@ -139,86 +153,152 @@
         id: "p1",
         short: "20/80 · Cautious",
         title: "World Allocation 20/80 vs Global Strategy Cautious",
-        verdict: "yes",
-        verdictLabel: "Yes — the extra 10 bp looks earned",
-        verdictText: "At the cautious end, Dimensional’s shorter high-quality bond book and slightly higher equity weight produced a clearly better five-year outcome with similar or lower volatility. HSBC is cheaper, but 2022 hurt it more.",
+        verdict: "mixed",
+        verdictLabel: "A 2022 story — not a year-in, year-out win",
+        verdictText: "Over a full run of calendar years the two funds are almost level (Dimensional’s average excess is −0.11 pp). Trailing five-year figures still favour Dimensional because Cautious lost 12.7% in 2022 and 20/80 lost 5.1%. You are paying 10 bp for a different bond book, not for higher returns in most years.",
         dim: { name: "Dimensional World Allocation 20/80", isin: "IE00BYTYTV40", ocf: 0.31, eq: 20, bonds: 80, prop: 0, r1: 8.4, r3: 7.1, r5: 3.6, vol: 4.7, dd: 6.3 },
         hsbc: { name: "HSBC Global Strategy Cautious C Acc", isin: "GB00B84DV184", ocf: 0.21, eq: 18, bonds: 80, prop: 2, r1: 4.4, r3: 5.7, r5: 1.1, vol: 5.1, dd: 12.7 },
+        calAvg: { hsbc: 3.27, dim: 3.42, extra: null, beat: -0.11 },
+        years: [
+          { y: "2026 YTD", dim: 4.34, hsbc: 1.24 },
+          { y: "2025", dim: 5.90, hsbc: 6.19 },
+          { y: "2024", dim: 6.88, hsbc: 4.36 },
+          { y: "2023", dim: 6.08, hsbc: 7.10 },
+          { y: "2022", dim: -5.11, hsbc: -12.73 },
+          { y: "2021", dim: 3.41, hsbc: 2.57 },
+          { y: "2020", dim: 2.62, hsbc: 5.44 },
+          { y: "2019", dim: 5.35, hsbc: 10.26 },
+          { y: "2018", dim: -1.54, hsbc: -1.71 },
+          { y: "2017", dim: 2.61, hsbc: 4.93 },
+          { y: "2016", dim: 7.08, hsbc: 11.13 }
+        ],
         allocNote: "Almost the same equity weight. The live difference is bond design (Dimensional shorter / high quality vs HSBC global govt + credit) and HSBC’s 2% REIT sleeve.",
         commentary: `
-          <p>This is the cleanest pair on the list. Both target roughly a fifth in shares. Dimensional charges 0.31% against HSBC’s 0.21% — about £10 a year more on £10,000.</p>
+          <p>This is still the cleanest pairing on risk. Both aim at roughly a fifth in shares. Dimensional costs 0.31% against 0.21%.</p>
           <ul>
-            <li>Over five years Dimensional compounded at about 3.6% a year versus about 1.1% for Cautious. That gap swamps a 10 bp fee.</li>
-            <li>Three-year volatility is similar (roughly 5%). The published 2022 calendar loss for Cautious was −12.7%; Dimensional’s own long-run max drawdown print is about −6%.</li>
-            <li>Why: Dimensional keeps duration shorter and credit quality high. HSBC’s global government/credit mix and small property sleeve took more of the 2022 rates shock.</li>
+            <li>Calendar-year NAV averages: Cautious 3.27%, 20/80 3.42%. Average Dimensional-minus-HSBC across paired years is <strong>−0.11 pp</strong>. That matches what the spreadsheet showed — HSBC is similar, and often ahead in up years.</li>
+            <li>The exception is 2022: Cautious −12.73%, 20/80 −5.11%. That single year is why trailing five-year annualised still looks like 3.6% versus 1.1%.</li>
+            <li>HSBC won 2016, 2017, 2019, 2020, 2023 and 2025. Dimensional won 2018, 2021, 2022, 2024 and YTD 2026.</li>
           </ul>
-          <p><strong>Takeaway for colleagues:</strong> if the client actually wants this risk level, paying Dimensional looks justified on the evidence we have. HSBC wins only if cost is the sole constraint and the client can live with a deeper rates-driven drawdown.</p>`
+          <p><strong>Takeaway:</strong> do not tell colleagues Dimensional “outperforms” at this rung. It did not, on a year-by-year average. Tell them it lost less when rates rose. If a client cares about 2022-style bond pain, the extra 10 bp is a reasonable insurance premium. If they care about the long-run scoreboard and cost, Cautious is fine.</p>`
       },
       {
         id: "p2",
         short: "40/60 · Conservative",
         title: "World Allocation 40/60 vs Global Strategy Conservative",
-        verdict: "yes",
-        verdictLabel: "Yes — still worth it, with a smaller edge",
-        verdictText: "Same neighbourhood (mid-30s to 40% equity). Dimensional is ahead on 1y / 3y / 5y annualised returns and not meaningfully riskier. The extra 12 bp is small next to the five-year gap.",
+        verdict: "mixed",
+        verdictLabel: "Slight calendar-year edge — again mostly 2022",
+        verdictText: "Average calendar-year excess for Dimensional is only +0.23 pp. Trailing five-year still looks kinder to 40/60 because Conservative fell 11.7% in 2022 and 40/60 fell 5.4%. The extra 12 bp is a downside-shape argument, not a compounding blowout.",
         dim: { name: "Dimensional World Allocation 40/60", isin: "IE00B56FVB15", ocf: 0.32, eq: 40, bonds: 60, prop: 0, r1: 9.5, r3: 9.1, r5: 5.3, vol: 6.2, dd: 9.9 },
         hsbc: { name: "HSBC Global Strategy Conservative C Acc", isin: "GB00BYVXBK29", ocf: 0.20, eq: 36, bonds: 60, prop: 4, r1: 7.2, r3: 8.3, r5: 3.3, vol: 6.4, dd: 11.7 },
+        calAvg: { hsbc: 4.64, dim: 5.32, extra: null, beat: 0.23 },
+        years: [
+          { y: "2026 YTD", dim: 7.36, hsbc: 4.30 },
+          { y: "2025", dim: 7.57, hsbc: 8.33 },
+          { y: "2024", dim: 8.77, hsbc: 7.38 },
+          { y: "2023", dim: 7.59, hsbc: 8.73 },
+          { y: "2022", dim: -5.37, hsbc: -11.68 },
+          { y: "2021", dim: 7.67, hsbc: 7.24 },
+          { y: "2020", dim: 4.24, hsbc: 6.64 },
+          { y: "2019", dim: 8.98, hsbc: 13.19 },
+          { y: "2018", dim: -3.05, hsbc: -2.41 }
+        ],
         allocNote: "Dimensional is a hard 40/60. Conservative’s long-term mix is 36/60/4 property; derivatives can push look-through equity a little higher on some snapshots.",
         commentary: `
-          <p>Fee gap is 12 bp (0.32% vs 0.20%). Morningstar trailing figures for 40/60 as at 22 Sep 2026 were 9.5% / 9.1% / 5.3% annualised over 1y / 3y / 5y. Conservative around the same month was about 7.2% / 8.3% / 3.3%.</p>
+          <p>Fee gap is 12 bp (0.32% vs 0.20%). Conservative only has a clean calendar-year series from 2018, so the average is a shorter sample than 20/80.</p>
           <ul>
-            <li>Dimensional is ahead on every common horizon we have, and 2022 was again kinder (−6.1% calendar vs Conservative’s mid-teens peak-to-trough in some reports).</li>
-            <li>Volatility sits in the same 6% band. This is not a case of Dimensional buying return with extra risk.</li>
-            <li>Implementation still differs: factor tilt and short developed bonds versus cap-weight + REITs + tactical duration.</li>
+            <li>Calendar-year averages: Conservative 4.64%, 40/60 5.32%. Average excess +0.23 pp. Close.</li>
+            <li>2022 again does the heavy lifting: −11.68% versus −5.37%. Without that year the two funds trade blows.</li>
+            <li>HSBC won 2019, 2020, 2023 and 2025. Dimensional won 2021, 2022, 2024 and YTD 2026. 2018 was a small HSBC win.</li>
           </ul>
-          <p><strong>Takeaway:</strong> yes, the extra fee looks earned at this rung. If a platform already holds the HSBC range and switching costs matter, the case is good but not urgent.</p>`
+          <p><strong>Takeaway:</strong> same pattern as 20/80. Dimensional is the better 2022 fund. It is not a consistent winner through the 2018–2025 tape. Worth the fee only if the client values the shorter, higher-quality bond book. Not worth it as a “it makes more money” pitch.</p>`
       },
       {
         id: "p3",
         short: "60/40 · Balanced",
         title: "World Allocation 60/40 vs Global Strategy Balanced",
         verdict: "mixed",
-        verdictLabel: "Mixed — Dimensional better at five years, HSBC competitive lately",
-        verdictText: "The fee gap widens to 15 bp and HSBC’s US-heavy index book can win a one-year race when mega-caps lead. Over five years Dimensional still has the sturdier record.",
+        verdictLabel: "HSBC is ahead on the calendar-year average",
+        verdictText: "Balanced’s average calendar year is 7.82% against 7.34% for 60/40 (Dimensional excess −0.48 pp). Trailing five-year can still look close because of 2022. At 15 bp extra, Dimensional has to win the implementation argument — it does not win the year-by-year scoreboard.",
         dim: { name: "Dimensional World Allocation 60/40", isin: "IE00B416SD35", ocf: 0.33, eq: 60, bonds: 40, prop: 0, r1: 16.2, r3: 11.2, r5: 7.1, vol: 8.0, dd: 14.4 },
         hsbc: { name: "HSBC Global Strategy Balanced C Acc", isin: "GB00B76WP695", ocf: 0.18, eq: 56, bonds: 38, prop: 6, r1: 11.2, r3: 11.9, r5: 6.3, vol: 7.6, dd: 10.5 },
+        calAvg: { hsbc: 7.82, dim: 7.34, extra: null, beat: -0.48 },
+        years: [
+          { y: "2026 YTD", dim: 10.73, hsbc: 7.98 },
+          { y: "2025", dim: 9.15, hsbc: 10.66 },
+          { y: "2024", dim: 10.27, hsbc: 10.82 },
+          { y: "2023", dim: 9.05, hsbc: 10.43 },
+          { y: "2022", dim: -5.72, hsbc: -10.52 },
+          { y: "2021", dim: 12.07, hsbc: 12.68 },
+          { y: "2020", dim: 5.68, hsbc: 7.73 },
+          { y: "2019", dim: 12.48, hsbc: 16.96 },
+          { y: "2018", dim: -4.80, hsbc: -4.20 },
+          { y: "2017", dim: 7.37, hsbc: 9.86 },
+          { y: "2016", dim: 20.06, hsbc: 19.53 },
+          { y: "2015", dim: 1.76, hsbc: 1.95 }
+        ],
         allocNote: "Dimensional is a straight 60/40. Balanced is about 56% equity, 38% bonds and 6% listed property, with a large US index weight.",
         commentary: `
-          <p>This is where the two philosophies start to trade blows. Dimensional costs 0.33%, Balanced 0.18% — the largest gap among the multi-asset pairs.</p>
+          <p>Largest multi-asset fee gap on the page: 0.33% versus 0.18%.</p>
           <ul>
-            <li>Trustnet mid-2026 had 60/40 at 16.2% / 37.6% / 41.0% cumulative over 1y / 3y / 5y (about 11.2% and 7.1% annualised). Balanced’s late-Sep 2026 trailing was about 11.2% / 11.9% p.a. / 6.3% p.a.</li>
-            <li>On a one-year window HSBC can look fine or better when the S&amp;P leads, because that is what the American Index sleeve is. Dimensional’s broader, cheaper, smaller-tilted book lags that tape and catches up when the market broadens — or when bonds are the story, as in 2022.</li>
-            <li>Risk is comparable: Dimensional brochure vol ~8.0% and max DD −14.4%; Balanced 3y vol ~7.6%.</li>
+            <li>Calendar-year averages: Balanced 7.82%, 60/40 7.34%. Dimensional’s average excess is <strong>−0.48 pp</strong>.</li>
+            <li>HSBC won most of the up years that a US-heavy cap-weight book is built for: 2017, 2019, 2020, 2021, 2023, 2024, 2025. Dimensional’s clear win is 2022 (−5.72% vs −10.52%) plus a small 2016 edge and YTD 2026.</li>
+            <li>That is why a trailing five-year window can flatter 60/40 while a 2015–2025 year list does not.</li>
           </ul>
-          <p><strong>Takeaway:</strong> do not switch on one-year form. If the client values a stable mix and a less concentrated equity engine, Dimensional still answers “yes”. If the brief is “cheapest global 60-ish with US growth baked in”, HSBC is the more honest fit and the extra Dimensional fee is harder to defend.</p>`
+          <p><strong>Takeaway:</strong> the extra fee is not earned on calendar-year returns. Keep Dimensional if the brief is “fixed 60/40, less US concentration, shorter bonds.” Keep Balanced if the brief is “cheap global 60-ish and we are comfortable with the S&amp;P leading.” Do not use five-year trailing alone at this rung.</p>`
       },
       {
         id: "p4",
         short: "80/20 · Dynamic · Adventurous",
         title: "World Allocation 80/20 vs Dynamic and Adventurous",
-        verdict: "mixed",
-        verdictLabel: "Not a clear win — Adventurous is the closer HSBC growth fund",
-        verdictText: "80/20 sits between Dynamic (~74% equity) and Adventurous (~85% equity). Five-year annualised returns are close across all three. You pay Dimensional for a fixed 80% mix and a factor book, not for a better scoreboard versus cheap HSBC growth portfolios.",
+        verdict: "no",
+        verdictLabel: "Not earned on the year-by-year tape",
+        verdictText: "Calendar-year averages: Adventurous 10.25%, Dynamic 10.17%, 80/20 9.91%. Dimensional wins 2022 and is level-ish in 2026 YTD. In the growth years that dominate this risk band, both HSBC funds were ahead — and cheaper.",
         dim: { name: "Dimensional World Allocation 80/20", isin: "IE00BYTYV184", ocf: 0.35, eq: 80, bonds: 20, prop: 0, r1: 22.1, r3: 13.7, r5: 8.8, vol: 10.5, dd: 19.5 },
         hsbc: { name: "HSBC Global Strategy Dynamic C Acc", isin: "GB00B849DT80", ocf: 0.19, eq: 74, bonds: 18, prop: 8, r1: 19.1, r3: 14.5, r5: 8.8, vol: 10.0, dd: 9.2 },
         extra: { name: "HSBC Global Strategy Adventurous C Acc", isin: "GB00BYVXBH99", ocf: 0.21, eq: 85.5, bonds: 5, prop: 9.5, r1: 21.8, r3: 16.2, r5: 10.4, vol: 10.0, dd: 8.5, label: "Adventurous" },
+        calAvg: { hsbc: 10.17, dim: 9.91, extra: 10.25, beat: null },
+        years: [
+          { y: "2026 YTD", dim: 13.88, hsbc: 11.51, extra: 13.46 },
+          { y: "2025", dim: 10.89, hsbc: 12.29, extra: 13.12 },
+          { y: "2024", dim: 11.81, hsbc: 14.22, extra: 16.29 },
+          { y: "2023", dim: 10.56, hsbc: 11.95, extra: 13.15 },
+          { y: "2022", dim: -5.68, hsbc: -9.15, extra: -8.50 },
+          { y: "2021", dim: 16.69, hsbc: 17.74, extra: 20.73 },
+          { y: "2020", dim: 6.24, hsbc: 8.21, extra: 7.96 },
+          { y: "2019", dim: 15.67, hsbc: 20.29, extra: 21.68 },
+          { y: "2018", dim: -7.20, hsbc: -5.33, extra: -5.68 },
+          { y: "2017", dim: 9.44, hsbc: 12.53, extra: null },
+          { y: "2016", dim: 26.68, hsbc: 24.36, extra: null }
+        ],
         allocNote: "Dimensional stays near 80/20. Dynamic’s long-term mix is 74/18/8 property. Adventurous is 85.5/5/9.5 — a step more equity than 80/20, with a larger REIT sleeve.",
         commentary: `
-          <p>This is a trio, not a pair. Dimensional 80/20 is the middle risk budget: Dynamic is a bit lighter on shares, Adventurous a bit heavier. OCFs are 0.35% versus 0.19% (Dynamic) and 0.21% (Adventurous).</p>
+          <p>Trio, not a pair. OCFs: 80/20 0.35%, Dynamic 0.19%, Adventurous 0.21%.</p>
           <ul>
-            <li>Five-year annualised returns sit in a tight band: 80/20 about 8.8%, Dynamic about 8.8%, Adventurous about 10.4%. Adventurous’s extra equity and US index weight explain most of that extra growth.</li>
-            <li>One-year figures are also close (80/20 ~22%, Adventurous ~22%, Dynamic ~19%). Three-year annualised slightly favours the two HSBC funds.</li>
-            <li>Volatility is similar (~10–10.5%). Dimensional’s published max drawdown is deeper (−19.5%) because it keeps a hard 80% in shares. Both HSBC funds can use bonds, property and tactical cuts as a buffer.</li>
+            <li>Calendar-year averages from the NAV series: Adventurous 10.25%, Dynamic 10.17%, 80/20 9.91%.</li>
+            <li>80/20’s only decisive win versus both HSBC funds is 2022 (−5.68% vs Dynamic −9.15% and Adventurous −8.50%). YTD 2026 is a photo finish with Adventurous.</li>
+            <li>2019, 2021, 2023, 2024 and 2025 — the years a cap-weighted global equity sleeve is supposed to work — HSBC led, Adventurous most of all.</li>
           </ul>
-          <p><strong>Takeaway:</strong> the extra Dimensional fee is not obviously earned on trailing returns against either HSBC growth portfolio. Use 80/20 if the client wants a fixed 80% factor mix. Use Dynamic if they want HSBC to take allocation calls at the lowest cost. Use Adventurous if they want the most equity HSBC will give them in this range.</p>`
+          <p><strong>Takeaway:</strong> the extra Dimensional fee is not earned on this tape. Use 80/20 only if the client specifically wants a hard 80% factor mix. Otherwise Dynamic (cheapest, HSBC calls the mix) or Adventurous (most equity in the HSBC range) are the cleaner answers.</p>`
       }
     ];
 
-    let retChart, allocChart, riskChart;
+    let retChart, allocChart, riskChart, yearChart;
     const $ = (id) => document.getElementById(id);
 
     function moneyGap(a, b) {
       return Math.round((a - b) * 100);
+    }
+    function fmt(n) {
+      if (n === null || n === undefined) return "—";
+      const abs = Math.abs(n).toFixed(2);
+      return (n < 0 ? "−" : "") + abs + "%";
+    }
+    function cls(n) {
+      if (n === null || n === undefined) return "muted";
+      if (n > 0.05) return "pos";
+      if (n < -0.05) return "neg";
+      return "";
     }
 
     function renderButtons() {
@@ -251,10 +331,11 @@
 
       const bp = moneyGap(p.dim.ocf, p.hsbc.ocf);
       const vs = p.extra ? " vs Dynamic" : "";
+      const beat = p.calAvg.beat === null ? "—" : ((p.calAvg.beat > 0 ? "+" : "") + p.calAvg.beat.toFixed(2) + " pp");
       $("kpis").innerHTML = `
         <div class="kpi"><span>Fee gap${vs}</span><b>${bp} bp</b></div>
-        <div class="kpi"><span>5y ann. gap${vs}</span><b>${(p.dim.r5 - p.hsbc.r5).toFixed(1)} pp</b></div>
-        <div class="kpi"><span>3y vol gap${vs}</span><b>${(p.dim.vol - p.hsbc.vol).toFixed(1)} pp</b></div>`;
+        <div class="kpi"><span>Cal. year avg gap</span><b>${p.extra ? (p.calAvg.dim - p.calAvg.hsbc).toFixed(2) + " pp" : beat}</b></div>
+        <div class="kpi"><span>5y ann. gap${vs}</span><b>${(p.dim.r5 - p.hsbc.r5).toFixed(1)} pp</b></div>`;
 
       $("allocNote").textContent = p.allocNote;
       $("commentary").innerHTML = p.commentary;
@@ -263,8 +344,10 @@
         responsive: true,
         maintainAspectRatio: false,
         plugins: { legend: { labels: { boxWidth: 12, font: { family: "Source Sans 3" } } } },
-        scales: { y: { ticks: { font: { family: "Source Sans 3" } }, grid: { color: "#eee8dc" } },
-                  x: { ticks: { font: { family: "Source Sans 3" } }, grid: { display: false } } }
+        scales: {
+          y: { ticks: { font: { family: "Source Sans 3" } }, grid: { color: "#eee8dc" } },
+          x: { ticks: { font: { family: "Source Sans 3" } }, grid: { display: false } }
+        }
       };
 
       const retSets = [
@@ -272,29 +355,28 @@
         { label: p.extra ? "Dynamic" : "HSBC", data: [p.hsbc.r1, p.hsbc.r3, p.hsbc.r5], backgroundColor: "#9b2d2d" }
       ];
       if (p.extra) retSets.push({ label: "Adventurous", data: [p.extra.r1, p.extra.r3, p.extra.r5], backgroundColor: "#c46b3a" });
-      const retData = {
-        labels: ["1 year", "3 year p.a.", "5 year p.a."],
-        datasets: retSets
-      };
       if (retChart) retChart.destroy();
-      retChart = new Chart($("retChart"), { type: "bar", data: retData, options: { ...common, scales: { ...common.scales, y: { ...common.scales.y, title: { display: true, text: "%" } } } } });
+      retChart = new Chart($("retChart"), {
+        type: "bar",
+        data: { labels: ["1 year", "3 year p.a.", "5 year p.a."], datasets: retSets },
+        options: { ...common, scales: { ...common.scales, y: { ...common.scales.y, title: { display: true, text: "%" } } } }
+      });
 
       const allocLabels = p.extra ? ["80/20", "Dynamic", "Adventurous"] : ["Dimensional", "HSBC"];
       const allocEq = p.extra ? [p.dim.eq, p.hsbc.eq, p.extra.eq] : [p.dim.eq, p.hsbc.eq];
       const allocBd = p.extra ? [p.dim.bonds, p.hsbc.bonds, p.extra.bonds] : [p.dim.bonds, p.hsbc.bonds];
       const allocPr = p.extra ? [p.dim.prop, p.hsbc.prop, p.extra.prop] : [p.dim.prop, p.hsbc.prop];
-      const allocData = {
-        labels: allocLabels,
-        datasets: [
-          { label: "Equity", data: allocEq, backgroundColor: "#2f4a6e" },
-          { label: "Bonds", data: allocBd, backgroundColor: "#8aa0b8" },
-          { label: "Property", data: allocPr, backgroundColor: "#c4a574" }
-        ]
-      };
       if (allocChart) allocChart.destroy();
       allocChart = new Chart($("allocChart"), {
         type: "bar",
-        data: allocData,
+        data: {
+          labels: allocLabels,
+          datasets: [
+            { label: "Equity", data: allocEq, backgroundColor: "#2f4a6e" },
+            { label: "Bonds", data: allocBd, backgroundColor: "#8aa0b8" },
+            { label: "Property", data: allocPr, backgroundColor: "#c4a574" }
+          ]
+        },
         options: { ...common, indexAxis: "y", scales: { x: { stacked: true, max: 100, ticks: { callback: v => v + "%" } }, y: { stacked: true } } }
       });
 
@@ -303,12 +385,52 @@
         { label: p.extra ? "Dynamic" : "HSBC", data: [p.hsbc.vol, p.hsbc.dd], backgroundColor: "#9b2d2d" }
       ];
       if (p.extra) riskSets.push({ label: "Adventurous", data: [p.extra.vol, p.extra.dd], backgroundColor: "#c46b3a" });
-      const riskData = {
-        labels: ["3y volatility", "Max published DD"],
-        datasets: riskSets
-      };
       if (riskChart) riskChart.destroy();
-      riskChart = new Chart($("riskChart"), { type: "bar", data: riskData, options: { ...common, scales: { ...common.scales, y: { ...common.scales.y, title: { display: true, text: "%" } } } } });
+      riskChart = new Chart($("riskChart"), {
+        type: "bar",
+        data: { labels: ["3y volatility", "Max published DD"], datasets: riskSets },
+        options: { ...common, scales: { ...common.scales, y: { ...common.scales.y, title: { display: true, text: "%" } } } }
+      });
+
+      const yLabels = p.years.map(r => r.y).slice().reverse();
+      const yDim = p.years.map(r => r.dim).slice().reverse();
+      const yHsbc = p.years.map(r => r.hsbc).slice().reverse();
+      const ySets = [
+        { label: p.extra ? "80/20" : "Dimensional", data: yDim, backgroundColor: "#2f4a6e" },
+        { label: p.extra ? "Dynamic" : "HSBC", data: yHsbc, backgroundColor: "#9b2d2d" }
+      ];
+      if (p.extra) ySets.push({
+        label: "Adventurous",
+        data: p.years.map(r => r.extra).slice().reverse(),
+        backgroundColor: "#c46b3a"
+      });
+      if (yearChart) yearChart.destroy();
+      yearChart = new Chart($("yearChart"), {
+        type: "bar",
+        data: { labels: yLabels, datasets: ySets },
+        options: {
+          ...common,
+          scales: {
+            ...common.scales,
+            y: { ...common.scales.y, title: { display: true, text: "%" } }
+          }
+        }
+      });
+
+      const head = p.extra
+        ? `<thead><tr><th>Year</th><th>Adventurous</th><th>Dynamic</th><th>80/20</th></tr></thead>`
+        : `<thead><tr><th>Year</th><th>HSBC</th><th>Dimensional</th><th>Dim − HSBC</th></tr></thead>`;
+      const rows = p.years.map(r => {
+        if (p.extra) {
+          return `<tr><td>${r.y}</td><td>${fmt(r.extra)}</td><td>${fmt(r.hsbc)}</td><td>${fmt(r.dim)}</td></tr>`;
+        }
+        const diff = (r.dim === null || r.hsbc === null) ? null : +(r.dim - r.hsbc).toFixed(2);
+        return `<tr><td>${r.y}</td><td>${fmt(r.hsbc)}</td><td>${fmt(r.dim)}</td><td class="${cls(diff)}">${diff === null ? "—" : (diff > 0 ? "+" : "") + diff.toFixed(2) + " pp"}</td></tr>`;
+      }).join("");
+      const foot = p.extra
+        ? `<tr><td>Average</td><td>${fmt(p.calAvg.extra)}</td><td>${fmt(p.calAvg.hsbc)}</td><td>${fmt(p.calAvg.dim)}</td></tr>`
+        : `<tr><td>Average</td><td>${fmt(p.calAvg.hsbc)}</td><td>${fmt(p.calAvg.dim)}</td><td class="${cls(p.calAvg.beat)}">${p.calAvg.beat > 0 ? "+" : ""}${p.calAvg.beat.toFixed(2)} pp</td></tr>`;
+      $("yearTable").innerHTML = head + `<tbody>${rows}${foot}</tbody>`;
     }
 
     renderButtons();
