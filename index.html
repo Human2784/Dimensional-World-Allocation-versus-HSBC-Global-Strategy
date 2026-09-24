@@ -64,7 +64,7 @@
       background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px 16px 12px;
     }
     .card h2 { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; font-weight: 700; }
-    .funds { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .funds { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
     .fund { border-radius: 12px; padding: 12px; }
     .fund.dim { background: var(--dim-soft); }
     .fund.hsbc { background: var(--hsbc-soft); }
@@ -73,7 +73,7 @@
     .fund.hsbc .who { color: var(--hsbc); }
     .fund h3 { margin: 4px 0 6px; font-size: 16px; line-height: 1.25; }
     .meta { font-size: 12px; color: var(--muted); }
-    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+    .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
     @media (max-width: 700px) { .kpis { grid-template-columns: 1fr 1fr; } }
     .kpi { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px; }
     .kpi span { display: block; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
@@ -194,41 +194,23 @@
       },
       {
         id: "p4",
-        short: "80/20 · Dynamic",
-        title: "World Allocation 80/20 vs Global Strategy Dynamic",
+        short: "80/20 · Dynamic · Adventurous",
+        title: "World Allocation 80/20 vs Dynamic and Adventurous",
         verdict: "mixed",
-        verdictLabel: "Not a clear win — returns have converged, fee has not",
-        verdictText: "Five-year outcomes are almost the same. Dynamic is 16 bp cheaper and can sit below its 74% equity target. You are paying Dimensional for a harder 80% equity weight and a factor book, not for a better scoreboard.",
+        verdictLabel: "Not a clear win — Adventurous is the closer HSBC growth fund",
+        verdictText: "80/20 sits between Dynamic (~74% equity) and Adventurous (~85% equity). Five-year annualised returns are close across all three. You pay Dimensional for a fixed 80% mix and a factor book, not for a better scoreboard versus cheap HSBC growth portfolios.",
         dim: { name: "Dimensional World Allocation 80/20", isin: "IE00BYTYV184", ocf: 0.35, eq: 80, bonds: 20, prop: 0, r1: 22.1, r3: 13.7, r5: 8.8, vol: 10.5, dd: 19.5 },
         hsbc: { name: "HSBC Global Strategy Dynamic C Acc", isin: "GB00B849DT80", ocf: 0.19, eq: 74, bonds: 18, prop: 8, r1: 19.1, r3: 14.5, r5: 8.8, vol: 10.0, dd: 9.2 },
-        allocNote: "Dimensional stays near 80/20. Dynamic’s long-term mix is 74/18/8 property; the live book was tactically lighter on equities in early 2026.",
+        extra: { name: "HSBC Global Strategy Adventurous C Acc", isin: "GB00BYVXBH99", ocf: 0.21, eq: 85.5, bonds: 5, prop: 9.5, r1: 21.8, r3: 16.2, r5: 10.4, vol: 10.0, dd: 8.5, label: "Adventurous" },
+        allocNote: "Dimensional stays near 80/20. Dynamic’s long-term mix is 74/18/8 property. Adventurous is 85.5/5/9.5 — a step more equity than 80/20, with a larger REIT sleeve.",
         commentary: `
-          <p>Fee gap is 16 bp (0.35% vs 0.19%). That is £16 a year on £10,000 before compounding — the widest World Allocation premium.</p>
+          <p>This is a trio, not a pair. Dimensional 80/20 is the middle risk budget: Dynamic is a bit lighter on shares, Adventurous a bit heavier. OCFs are 0.35% versus 0.19% (Dynamic) and 0.21% (Adventurous).</p>
           <ul>
-            <li>Trustnet mid-2026: 80/20 22.1% / 46.9% / 52.4% cumulative. Dynamic around August: 19.1% / 50.2% / 52.2%. Five-year totals are effectively a dead heat.</li>
-            <li>Volatility is also a dead heat (~10%). Dynamic’s published 2022 calendar was about −9%; Dimensional’s long-run max DD is −19.5% because it keeps more equity on all the time.</li>
-            <li>The pairing is the loosest of the four World Allocation matches. Dynamic is allowed to move. Comparing a hard 80/20 with a fund that was near 64% equity on one 2026 snapshot is not a pure implementation test.</li>
+            <li>Five-year annualised returns sit in a tight band: 80/20 about 8.8%, Dynamic about 8.8%, Adventurous about 10.4%. Adventurous’s extra equity and US index weight explain most of that extra growth.</li>
+            <li>One-year figures are also close (80/20 ~22%, Adventurous ~22%, Dynamic ~19%). Three-year annualised slightly favours the two HSBC funds.</li>
+            <li>Volatility is similar (~10–10.5%). Dimensional’s published max drawdown is deeper (−19.5%) because it keeps a hard 80% in shares. Both HSBC funds can use bonds, property and tactical cuts as a buffer.</li>
           </ul>
-          <p><strong>Takeaway:</strong> the extra Dimensional fee is not obviously earned on trailing returns. Buy 80/20 if you want the factor engine and a fixed 80% equity weight. Buy Dynamic if you want HSBC to take the allocation calls and keep costs down. Do not tell a colleague “Dimensional outperformed” at this rung — it did not, net of the period noise.</p>`
-      },
-      {
-        id: "p5",
-        short: "Core Equity · Adventurous",
-        title: "Global Core Equity vs Global Strategy Adventurous",
-        verdict: "no",
-        verdictLabel: "Wrong comparison for a fee debate",
-        verdictText: "Adventurous is still a multi-asset fund (~85% equity + REITs + a stub of bonds). Global Core Equity is 100% developed-market shares. The 5 bp extra is not the point — you are buying a different job.",
-        dim: { name: "Dimensional Global Core Equity", isin: "IE00B2PC0484", ocf: 0.26, eq: 100, bonds: 0, prop: 0, r1: 20.0, r3: 16.6, r5: 11.1, vol: 17.8, dd: 33.2 },
-        hsbc: { name: "HSBC Global Strategy Adventurous C Acc", isin: "GB00BYVXBH99", ocf: 0.21, eq: 85.5, bonds: 5, prop: 9.5, r1: 21.8, r3: 16.2, r5: 10.4, vol: 10.0, dd: 8.5 },
-        allocNote: "This pair is a risk-level neighbour, not a strategy twin. Dimensional has no strategic bonds, no REIT sleeve and no emerging markets. Adventurous has all three.",
-        commentary: `
-          <p>Fee gap is only 5 bp. That is not a meaningful hurdle. The question is whether a 100% developed factor equity fund can stand in for HSBC’s most aggressive ready-made portfolio.</p>
-          <ul>
-            <li>Trailing growth is close: Core Equity about 20% / 16.6% p.a. / 11.1% p.a.; Adventurous about 22% / 16.2% p.a. / 10.4% p.a. on mid-to-late 2026 prints.</li>
-            <li>Risk is not close. Core Equity’s long-run volatility and max drawdown (~18% / −33%) are equity-fund numbers. Adventurous’s 3y vol near 10% and 2022 calendar around −8.5% still have a shock absorber.</li>
-            <li>When US mega-caps lead, Adventurous’s cap-weighted sleeve can beat Core Equity over a year even with 15% in bonds and property. When value/small works, or when you simply want full equity, Core Equity is the truer instrument.</li>
-          </ul>
-          <p><strong>Takeaway:</strong> do not use this pair to decide “is Dimensional worth 5 bp?” Use it to decide whether the client wants a one-stop 85% portfolio or a developed equity building block. If you need a Dimensional 100% world equity peer that includes EM, that fund is World Equity, not Global Core Equity.</p>`
+          <p><strong>Takeaway:</strong> the extra Dimensional fee is not obviously earned on trailing returns against either HSBC growth portfolio. Use 80/20 if the client wants a fixed 80% factor mix. Use Dynamic if they want HSBC to take allocation calls at the lowest cost. Use Adventurous if they want the most equity HSBC will give them in this range.</p>`
       }
     ];
 
@@ -259,16 +241,20 @@
       box.className = "verdict " + p.verdict;
       box.innerHTML = `<strong>${p.verdictLabel}</strong><p>${p.verdictText}</p>`;
 
-      $("fundCards").innerHTML = `
+      let cards = `
         <div class="fund dim"><div class="who">Dimensional</div><h3>${p.dim.name}</h3><div class="meta">${p.dim.isin}<br>OCF ${p.dim.ocf.toFixed(2)}%</div></div>
         <div class="fund hsbc"><div class="who">HSBC</div><h3>${p.hsbc.name}</h3><div class="meta">${p.hsbc.isin}<br>OCF ${p.hsbc.ocf.toFixed(2)}%</div></div>`;
+      if (p.extra) {
+        cards += `<div class="fund hsbc"><div class="who">HSBC</div><h3>${p.extra.name}</h3><div class="meta">${p.extra.isin}<br>OCF ${p.extra.ocf.toFixed(2)}%</div></div>`;
+      }
+      $("fundCards").innerHTML = cards;
 
       const bp = moneyGap(p.dim.ocf, p.hsbc.ocf);
+      const vs = p.extra ? " vs Dynamic" : "";
       $("kpis").innerHTML = `
-        <div class="kpi"><span>Fee gap</span><b>${bp} bp</b></div>
-        <div class="kpi"><span>Extra / £10k / yr</span><b>£${bp}</b></div>
-        <div class="kpi"><span>5y ann. gap</span><b>${(p.dim.r5 - p.hsbc.r5).toFixed(1)} pp</b></div>
-        <div class="kpi"><span>3y vol gap</span><b>${(p.dim.vol - p.hsbc.vol).toFixed(1)} pp</b></div>`;
+        <div class="kpi"><span>Fee gap${vs}</span><b>${bp} bp</b></div>
+        <div class="kpi"><span>5y ann. gap${vs}</span><b>${(p.dim.r5 - p.hsbc.r5).toFixed(1)} pp</b></div>
+        <div class="kpi"><span>3y vol gap${vs}</span><b>${(p.dim.vol - p.hsbc.vol).toFixed(1)} pp</b></div>`;
 
       $("allocNote").textContent = p.allocNote;
       $("commentary").innerHTML = p.commentary;
@@ -281,22 +267,28 @@
                   x: { ticks: { font: { family: "Source Sans 3" } }, grid: { display: false } } }
       };
 
+      const retSets = [
+        { label: p.extra ? "80/20" : "Dimensional", data: [p.dim.r1, p.dim.r3, p.dim.r5], backgroundColor: "#2f4a6e" },
+        { label: p.extra ? "Dynamic" : "HSBC", data: [p.hsbc.r1, p.hsbc.r3, p.hsbc.r5], backgroundColor: "#9b2d2d" }
+      ];
+      if (p.extra) retSets.push({ label: "Adventurous", data: [p.extra.r1, p.extra.r3, p.extra.r5], backgroundColor: "#c46b3a" });
       const retData = {
         labels: ["1 year", "3 year p.a.", "5 year p.a."],
-        datasets: [
-          { label: "Dimensional", data: [p.dim.r1, p.dim.r3, p.dim.r5], backgroundColor: "#2f4a6e" },
-          { label: "HSBC", data: [p.hsbc.r1, p.hsbc.r3, p.hsbc.r5], backgroundColor: "#9b2d2d" }
-        ]
+        datasets: retSets
       };
       if (retChart) retChart.destroy();
       retChart = new Chart($("retChart"), { type: "bar", data: retData, options: { ...common, scales: { ...common.scales, y: { ...common.scales.y, title: { display: true, text: "%" } } } } });
 
+      const allocLabels = p.extra ? ["80/20", "Dynamic", "Adventurous"] : ["Dimensional", "HSBC"];
+      const allocEq = p.extra ? [p.dim.eq, p.hsbc.eq, p.extra.eq] : [p.dim.eq, p.hsbc.eq];
+      const allocBd = p.extra ? [p.dim.bonds, p.hsbc.bonds, p.extra.bonds] : [p.dim.bonds, p.hsbc.bonds];
+      const allocPr = p.extra ? [p.dim.prop, p.hsbc.prop, p.extra.prop] : [p.dim.prop, p.hsbc.prop];
       const allocData = {
-        labels: ["Dimensional", "HSBC"],
+        labels: allocLabels,
         datasets: [
-          { label: "Equity", data: [p.dim.eq, p.hsbc.eq], backgroundColor: "#2f4a6e" },
-          { label: "Bonds", data: [p.dim.bonds, p.hsbc.bonds], backgroundColor: "#8aa0b8" },
-          { label: "Property", data: [p.dim.prop, p.hsbc.prop], backgroundColor: "#c4a574" }
+          { label: "Equity", data: allocEq, backgroundColor: "#2f4a6e" },
+          { label: "Bonds", data: allocBd, backgroundColor: "#8aa0b8" },
+          { label: "Property", data: allocPr, backgroundColor: "#c4a574" }
         ]
       };
       if (allocChart) allocChart.destroy();
@@ -306,12 +298,14 @@
         options: { ...common, indexAxis: "y", scales: { x: { stacked: true, max: 100, ticks: { callback: v => v + "%" } }, y: { stacked: true } } }
       });
 
+      const riskSets = [
+        { label: p.extra ? "80/20" : "Dimensional", data: [p.dim.vol, p.dim.dd], backgroundColor: "#2f4a6e" },
+        { label: p.extra ? "Dynamic" : "HSBC", data: [p.hsbc.vol, p.hsbc.dd], backgroundColor: "#9b2d2d" }
+      ];
+      if (p.extra) riskSets.push({ label: "Adventurous", data: [p.extra.vol, p.extra.dd], backgroundColor: "#c46b3a" });
       const riskData = {
         labels: ["3y volatility", "Max published DD"],
-        datasets: [
-          { label: "Dimensional", data: [p.dim.vol, p.dim.dd], backgroundColor: "#2f4a6e" },
-          { label: "HSBC", data: [p.hsbc.vol, p.hsbc.dd], backgroundColor: "#9b2d2d" }
-        ]
+        datasets: riskSets
       };
       if (riskChart) riskChart.destroy();
       riskChart = new Chart($("riskChart"), { type: "bar", data: riskData, options: { ...common, scales: { ...common.scales, y: { ...common.scales.y, title: { display: true, text: "%" } } } } });
